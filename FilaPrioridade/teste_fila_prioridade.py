@@ -1,5 +1,6 @@
-from FilePrioridade import *
-
+# -*- coding:utf-8 -*-
+from fila_prioridade import FilaPrioridade
+from no import No
 
 fila = FilaPrioridade(4)
 print("")

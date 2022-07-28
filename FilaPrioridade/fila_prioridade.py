@@ -1,4 +1,4 @@
-from No import *
+# -*- coding:utf-8 -*-
 
 class FilaPrioridade:
     def __init__(self, capacity=10) -> None:

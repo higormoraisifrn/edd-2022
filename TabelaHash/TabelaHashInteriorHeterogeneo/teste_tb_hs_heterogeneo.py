@@ -29,4 +29,10 @@ tb.remover(31)
 print("\t\t ---> LISTA SEM 31")
 tb.imprimir()
 
+print("\t\t ---> INSERINDO 31 2x")
+tb.inserir(No(31))
+tb.inserir(No(31))
+
+tb.imprimir()
+
 print("\t\t ---> SE ACABOU...")

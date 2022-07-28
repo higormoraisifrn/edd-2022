@@ -1,6 +1,4 @@
 # -*- coding:UTF-8 -*-
-from enum import Enum
-
 
 # Constantes
 OCUPADO = 1
@@ -31,7 +29,7 @@ class TabelaHashInteriorHeterogeno:
         else:
             # iterar sobre a Tabela
             while True:
-                if self.slot[posicao].chave == chave:
+                if self.slot[posicao].chave == chave and self.status[posicao] == OCUPADO:
                     return achou, posicao
                 else:
                     # verifica se há um próximo a ser verificado
@@ -42,47 +40,56 @@ class TabelaHashInteriorHeterogeno:
 
 
     def inserir(self, node):
+        achou, posicao = self.buscar(node.chave)
         index = self.hash_function(node.chave)
-        sinonimo = False
+        primeiro_sinonimo = True
 
-        # inserir na parte "p" da Tabela
-        if self.status[index] != OCUPADO:
-            if self.status[index] == LIBERADO:
-                node.prox = self.slot[index].prox
-            self.slot[index] = node
-            self.status[index] = OCUPADO
+        if not achou:
+            # inserir node na parte "p" da Tabela
+            if self.status[index] != OCUPADO:
+                if self.status[index] == LIBERADO:
+                    node.prox = self.slot[index].prox
+                self.slot[index] = node
+                self.status[index] = OCUPADO
+            else:
+                aux_index = index
+                anterior = index
+                continua = True
+
+                # Verifica se tem sinônimo na parte "s" da tabela
+                if self.slot[aux_index].prox != VAZIO:
+                    primeiro_sinonimo = False
+
+                # existe sinônimo na parte "s" da tabela
+                # procura um sinônimo que não tenha próximo na parte "s" da tabela
+                if not primeiro_sinonimo:
+                    while continua:
+                        anterior = aux_index
+                        if self.slot[aux_index].prox != VAZIO:
+                            aux_index = self.slot[aux_index].prox
+                        else:
+                            # while self.status[aux_index] == OCUPADO and aux_index<self.tamanho:
+                            #     aux_index += 1
+                            continua = False
+
+                 # primeira colisão com sinônimo
+                 # procura um espaço vazio na parte "s" da tabela
+                else:
+                    aux_index = self.p
+                    while self.status[aux_index] == OCUPADO and aux_index<self.tamanho:
+                        aux_index += 1
+                
+                # encontrou posição disponível na tabela
+                if self.status[aux_index] != OCUPADO:
+                    self.slot[anterior].prox = aux_index
+                    if self.status[aux_index] == LIBERADO:
+                        node.prox = self.slot[aux_index].prox
+                    self.slot[aux_index] = node
+                    self.status[aux_index] = OCUPADO
+                else:
+                    print(f"Não foi possível inserir {node.chave} na Tabela")
         else:
-            aux_index = index
-            anterior = index
-            continua = True
-
-            # Verifica se tem sinônimo
-            if self.slot[aux_index].prox != VAZIO:
-                sinonimo = True
-
-            if sinonimo:
-                while continua:
-                    anterior = aux_index
-                    if self.slot[aux_index].prox != -1:
-                        aux_index = self.slot[aux_index].prox
-                    else:
-                        while self.status[aux_index] == OCUPADO and aux_index<self.tamanho:
-                            aux_index += 1
-                        continua = False
-            else:
-                aux_index = self.p
-                while self.status[aux_index] == OCUPADO and aux_index<self.tamanho:
-                    aux_index += 1
-            
-            # encontrou posição disponível na tabela
-            if self.status[aux_index] != OCUPADO:
-                self.slot[anterior].prox = aux_index
-                if self.status[aux_index] == LIBERADO:
-                    node.prox = self.slot[aux_index].prox
-                self.slot[aux_index] = node
-                self.status[aux_index] = OCUPADO
-            else:
-                print(f"Não foi possível inserir {node.chave} na Tabela")
+            print(f"A chave {node.chave} já está presente na Tabela")
         
 
     def remover(self, chave):
